@@ -1,6 +1,6 @@
 import React from "react";
 import SessionProvider from "../contexts/SessionProvider";
-import '../styles/globals.css'
+import '../styles/globals.scss'
 import {unstable_getServerSession} from "next-auth/next";
 import {authOptions} from "../pages/api/auth/[...nextauth]";
 

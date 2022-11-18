@@ -2,6 +2,7 @@ import Link from "next/link";
 import {authOptions} from "../../pages/api/auth/[...nextauth]";
 import {redirect} from "next/navigation";
 import {unstable_getServerSession} from "next-auth/next";
+import HouseholdsList from "../../components/household/HouseholdList";
 
 export default async function Dashboard() {
     const session = await unstable_getServerSession(authOptions)
@@ -10,17 +11,15 @@ export default async function Dashboard() {
         redirect("/login")
     }
 
-    console.log(session);
-
     return (
-        <>
-            DASHBOARD
-            <div>
-                <ul>
-                    <li><Link href={'/'}>Accueil</Link></li>
-                    <li><Link href={'/login'}>Login</Link></li>
-                </ul>
+        <section className="dashboard">
+            <div className="container">
+                DASHBOARD
+                <div>
+                    <Link href="/dashboard/household/create">Create Household</Link>
+                </div>
+                <HouseholdsList/>
             </div>
-        </>
+        </section>
     )
 }
