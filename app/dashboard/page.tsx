@@ -18,6 +18,7 @@ export default async function Dashboard() {
                 <div>
                     <Link href="/dashboard/household/create">Create Household</Link>
                 </div>
+                {/* @ts-expect-error Server Component */}
                 <HouseholdsList/>
             </div>
         </section>
