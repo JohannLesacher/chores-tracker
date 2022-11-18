@@ -1,0 +1,103 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  id                 Int     @id @default(autoincrement())
+  userId             Int     @map("user_id")
+  type               String
+  provider           String
+  providerAccountId  String  @map("provider_account_id")
+  refresh_token      String?
+  access_token       String?
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String?
+  session_state      String?
+  oauth_token_secret String?
+  oauth_token        String?
+  user               User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           Int      @id @default(autoincrement())
+  sessionToken String   @unique @map("session_token")
+  userId       Int      @map("user_id")
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model User {
+  id            Int                 @id @default(autoincrement())
+  name          String?
+  email         String?             @unique
+  emailVerified DateTime?           @map("email_verified")
+  image         String?
+  createdAt     DateTime            @default(now()) @map(name: "created_at")
+  updatedAt     DateTime            @updatedAt @map(name: "updated_at")
+  accounts      Account[]
+  sessions      Session[]
+  households    UsersOnHouseholds[]
+
+  @@map(name: "users")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verificationtokens")
+}
+
+model Chore {
+  id          Int    @id @default(autoincrement())
+  name        String
+  coefficient Int
+
+  @@map(name: "chores")
+}
+
+model ChoreDone {
+  id          Int       @id @default(autoincrement())
+  duration    Int
+  household   Household @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  householdId Int       @map("household_id")
+
+  @@map(name: "choresdone")
+}
+
+model Household {
+  id         Int                 @id @default(autoincrement())
+  name       String
+  slug       String
+  users      UsersOnHouseholds[]
+  createdAt  DateTime            @default(now()) @map(name: "created_at")
+  updatedAt  DateTime            @updatedAt @map(name: "updated_at")
+  choresdone ChoreDone[]
+
+  @@map(name: "households")
+}
+
+model UsersOnHouseholds {
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      Int       @map("user_id")
+  household   Household @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  householdId Int       @map("household_id")
+  assignedAt  DateTime  @default(now()) @map(name: "assigned_at")
+
+  @@id([userId, householdId])
+  @@map(name: "usersonhouseholds")
+}
